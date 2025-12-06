@@ -1,5 +1,9 @@
+import 'dart:convert';
+
+import 'package:emee/pages/auth-page/auth_api.dart';
 import 'package:emee/pages/auth-page/signup.dart';
 import 'package:emee/pages/home-page/navpage.dart';
+import 'package:emee/services/auth_service.dart';
 import 'package:flutter/material.dart';
 
 class LoginPage extends StatefulWidget {
@@ -11,6 +15,18 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   final _formKey = GlobalKey<FormState>();
+  final AuthService _authService = AuthService();
+
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+
+  @override 
+  void dispose() {
+    // TODO: implement dispose
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -41,15 +57,16 @@ class _LoginPageState extends State<LoginPage> {
                 child: TextFormField(
                   decoration: InputDecoration(
                     label : Text(
-                      'Username'
+                      'Email'
                     ),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(20)
                   )
                   ),
+                  controller: _emailController,
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Please enter your username';
+                      return 'Please enter your email';
                     }
                   },
                 ),
@@ -69,6 +86,7 @@ class _LoginPageState extends State<LoginPage> {
                   )
                   ),
                   obscureText: true,
+                  controller: _passwordController,
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'Please enter your password';
@@ -80,15 +98,30 @@ class _LoginPageState extends State<LoginPage> {
                 height: 30,
               ),
               ElevatedButton(
-                onPressed: () => {
+                onPressed: () async {
                   if (_formKey.currentState!.validate()) {
                     // for a success
-                    Navigator.pushReplacement(
-                      context, 
-                      MaterialPageRoute(
-                        builder: (context) => const NavPage()
-                      )
-                    )
+                    final loginRes = await loginAcc(_emailController.text, _passwordController.text);
+
+                    if(loginRes.statusCode == 201) {
+                      final data = jsonDecode(loginRes.body);
+
+                      await _authService.saveToken(data['token']);
+
+                      Navigator.pushReplacement(
+                        context, 
+                        MaterialPageRoute(
+                          builder: (context) => const NavPage()
+                        )
+                      );
+                    }
+                    else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text(loginRes.body))
+                      );
+                    }
+                    
+                    
                   }
                 }, 
                 style: ElevatedButton.styleFrom(

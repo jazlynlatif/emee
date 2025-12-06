@@ -1,5 +1,11 @@
-import 'package:emee/pages/active-report.dart';
+import 'dart:convert';
+import 'package:emee/pages/chatroom/chatroom.dart';
+import 'package:emee/pages/chatroom/chatroom_api.dart';
+import 'package:emee/pages/home-page/widgets/report-popup.dart';
+import 'package:emee/services/geolocator_service.dart';
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:emee/pages/data.dart';
 
 
 class HomePage extends StatefulWidget {
@@ -10,61 +16,53 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  void showNotif(servicename) {
-    showModalBottomSheet(
+  UserPosition currPosition = UserPosition();
+  final List<String> serviceName = Services.names;
+  
+  void showNotif(serviceid) async {
+
+    showDialog(
       context: context, 
+      barrierDismissible: false,
       builder: (context) {
-        return SizedBox(
-          height: 400,
-          child: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                SizedBox(
-                  height: 25,
-                ),
-                Text(
-                  'Report to ${servicename}',
-                  style: TextStyle(
-                    fontSize: 30,
-                    fontWeight: FontWeight.bold
-                  ),
-                ),
-                SizedBox(
-                  height: 15,
-                ),
-                Text(
-                  'Personal Info'
-                ),
-                Spacer(),
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.pushAndRemoveUntil(
-                      context, 
-                      MaterialPageRoute(builder: (context) => ActiveReport(service: servicename)), 
-                      (Route<dynamic> route) => false
-                    );
-                  }, 
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.red,
-                  ),
-                  child: const Text(
-                    'REPORT',
-                    style: TextStyle(
-                      color: Color.fromRGBO(255, 255, 255, 1),
-                      fontSize: 40
-                    ),
-                  ),
-                ),
-                SizedBox(
-                  height: 25,
-                )
-              ],
+        return AlertDialog(
+          backgroundColor: Colors.white,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(5)
+          ),
+          content: const SizedBox(
+            height: 60,
+            child: Center(
+              child : CircularProgressIndicator(),
             ),
           ),
         );
       }
     );
+
+    late Position position;
+
+    try {
+      position = await currPosition.getCurrentLocation();
+    } catch (err) {
+      ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error fetching location : $err'))
+      );
+    } 
+
+    if(context.mounted) {
+      Navigator.of(context).pop();
+    }
+
+    if(context.mounted && position != null) {
+      final theme = Theme.of(context);
+      showDialog(
+        context: context, 
+        builder: (context) {
+          return ReportPopUp(serviceid: serviceid,position: position);
+        },
+      );
+    }
   }
 
   @override
@@ -81,7 +79,7 @@ class _HomePageState extends State<HomePage> {
           children: [
             GestureDetector(
               onTap: () {
-                showNotif('MEDIC');
+                showNotif(1);
               },
               child: Container(
                 margin : EdgeInsets.symmetric(vertical : 20, horizontal : 40),
@@ -120,7 +118,7 @@ class _HomePageState extends State<HomePage> {
             ),
             GestureDetector(
               onTap: () {
-                showNotif('FIRE DEPT');
+                showNotif(2);
               },
               child: Container(
                 margin : EdgeInsets.symmetric(vertical : 20, horizontal : 40),

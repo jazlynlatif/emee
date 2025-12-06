@@ -1,3 +1,9 @@
+import 'dart:convert';
+
+import 'package:emee/pages/auth-page/auth_api.dart';
+import 'package:emee/pages/auth-page/signup_details.dart';
+import 'package:emee/pages/home-page/navpage.dart';
+import 'package:emee/services/auth_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:emee/pages/auth-page/login.dart';
@@ -11,13 +17,21 @@ class SignUp extends StatefulWidget {
 
 class _SignUpState extends State<SignUp> {
   final _formKey = GlobalKey<FormState>();
+  final AuthService _authService = AuthService();
 
-  final TextEditingController _birthDate = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+
+  void dispose() {
+    // TODO: implement dispose
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    DateTime? selectedDate;
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -43,7 +57,7 @@ class _SignUpState extends State<SignUp> {
               child: TextFormField(
                 decoration: InputDecoration(
                   label: const Text(
-                    'First Name'
+                    'Email'
                   ),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(20)
@@ -51,9 +65,10 @@ class _SignUpState extends State<SignUp> {
                 ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Enter your first name';
+                    return 'Enter your email';
                   }
                 },
+                controller: _emailController,
               ),
             ),
             SizedBox(
@@ -64,89 +79,46 @@ class _SignUpState extends State<SignUp> {
               child: TextFormField(
                 decoration: InputDecoration(
                   label: const Text(
-                    'Last Name'
-                  ),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(20)
-                  )
-                ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Enter your last name';
-                  }
-                },
-              ),
-            ),
-            SizedBox(
-              height: 20,
-            ),
-            Container(
-              padding: EdgeInsets.symmetric(horizontal: 30),
-              child: TextFormField(
-                controller: _birthDate,
-                readOnly: true,
-                decoration: InputDecoration(
-                  label: const Text(
-                    'Birth Date'
+                    'Password'
                   ),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(20)
                   ),
                 ),
-                onTap: () async{
-                  FocusScope.of(context).requestFocus(new FocusNode());
-                  DateTime currDate = DateTime.now();
-                  DateTime? pickedDate = await showDatePicker(
-                    context: context, 
-                    initialDate: currDate,
-                    firstDate: DateTime(currDate.year-13), 
-                    lastDate: currDate
-                  );
-                  if(pickedDate != null) {
-                    setState(() {
-                      _birthDate.text = '${pickedDate.toLocal()}'.split(' ')[0];
-                    });
-                  }
-                },
+                obscureText: true,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Enter your birth date';
+                    return 'Enter your password';
                   }
                 },
-              ),
-            ),
-            SizedBox(
-              height: 20,
-            ),
-            Container(
-              padding: EdgeInsets.symmetric(horizontal: 30),
-              child: TextFormField(
-                decoration: InputDecoration(
-                  label: const Text(
-                    'Phone number'
-                  ),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                ),
-                inputFormatters: [
-                  LengthLimitingTextInputFormatter(13)
-                ],
-                keyboardType: TextInputType.numberWithOptions(),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Enter your phone number';
-                  }
-                },
+                controller: _passwordController,
               ),
             ),
             SizedBox(
               height: 20,
             ),
             ElevatedButton(
-              onPressed: () => {
+              onPressed: () async{
                 if (_formKey.currentState!.validate()) {
                   // for a success
+                  
+                  final registerRes = await registerAcc(_emailController.text, _passwordController.text);
+
+                  if (registerRes.statusCode == 201) {
+                    final data = jsonDecode(registerRes.body);
+
+                    await _authService.saveToken(data['token']);
+
+                    Navigator.pushReplacement(
+                      context, 
+                      MaterialPageRoute(builder: (context) => const SignUpDetails())
+                    );
+                  }
+                  else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text(registerRes.body))
+                    );
+                  }
                 }
               }, 
               style: ElevatedButton.styleFrom(

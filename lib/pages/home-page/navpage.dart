@@ -1,4 +1,5 @@
 
+import 'package:emee/pages/home-page/profile_api.dart';
 import 'package:emee/pages/home-page/widgets/history.dart';
 import 'package:emee/pages/home-page/widgets/home.dart';
 import 'package:emee/pages/home-page/widgets/profile.dart';
@@ -63,5 +64,8 @@ class _NavPageState extends State<NavPage> {
         ]
       ),
     );
+      
+      
+    
   }
 }

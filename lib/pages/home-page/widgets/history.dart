@@ -1,3 +1,5 @@
+import 'package:emee/pages/data.dart';
+import 'package:emee/pages/home-page/profile_api.dart';
 import 'package:flutter/material.dart';
 
 class History extends StatefulWidget {
@@ -65,6 +67,86 @@ class _HistoryState extends State<History> {
                   ),
                 );
               },
+            ),
+          ),
+          Expanded(
+            child: FutureBuilder(
+              future: fetchReportHistory(), 
+              builder: (context, snapshot) {
+                if(snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(child: CircularProgressIndicator());
+                }
+
+                if(snapshot.hasError) {
+                  return Center(child: Text("Error : ${snapshot.error}"),);
+                }
+
+                if(!snapshot.hasData || snapshot.data == null) {
+                  return const Center(child: Text("No data"));
+                }
+
+                final userData = snapshot.data!;
+
+                return userData.isEmpty ? Center(child: Text('no reports so far :)')) 
+                : ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: userData.length,
+                  itemBuilder: (context, index) {
+                    final data = userData[index];
+                    final serviceName = Services.names[data['service_id']-1];
+                    final DateTime time = DateTime.parse(data['created_at']).toLocal();
+                    final timestamp = '${time.day.toString().padLeft(2, '0')} ' '${Utilities.months[time.month-1]},' ' ${time.hour.toString().padLeft(2, '0')}:${time.minute.toString().padLeft(2, '0')}';
+                    return Container(
+                      width: double.infinity,
+                      margin: EdgeInsets.all(15),
+                      padding: EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        border: Border.all(
+                          color: theme.colorScheme.primary
+                        ),
+                        borderRadius: BorderRadius.circular(15),
+                        color: Colors.white
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            timestamp,
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 12,
+                              color: Colors.grey[600]
+                            ),
+                          ),
+                          SizedBox(
+                            height: 5,
+                          ),
+                          Row(
+                            children: [
+                              CircleAvatar(
+                                radius: 10,
+                                backgroundColor: serviceName == 'MEDIC' ? Colors.blue : serviceName == 'FIRE DEPT' ? Colors.red : theme.colorScheme.primary,
+                              ),
+                              SizedBox(
+                                width: 10,
+                              ),
+                              Column(
+                                children: [
+                                  Text(
+                                    serviceName,
+                                    style: theme.textTheme.titleSmall,
+                                  ),
+                                ],
+                              ),
+                              Spacer(),
+                            ],
+                          ),
+                        ],
+                      ),
+                    );
+                  }
+                );
+              }
             ),
           )
         ],
