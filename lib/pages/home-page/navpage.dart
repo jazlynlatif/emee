@@ -29,6 +29,7 @@ class _NavPageState extends State<NavPage> {
         children: pages,
       ),
       bottomNavigationBar: NavigationBar(
+        backgroundColor: Colors.white,
         onDestinationSelected: (index) {
           setState(() {
             currPageIndex = index;
@@ -46,7 +47,7 @@ class _NavPageState extends State<NavPage> {
           NavigationDestination(
             icon: Icon(Icons.history_outlined),
             selectedIcon: Icon(Icons.history), 
-            label: 'History'
+            label: 'Riwayat'
           ),
           NavigationDestination(
             icon: Icon(
@@ -59,7 +60,7 @@ class _NavPageState extends State<NavPage> {
           NavigationDestination(
             icon: Icon(Icons.account_circle_outlined), 
             selectedIcon: Icon(Icons.account_circle),
-            label: 'Profile'
+            label: 'Profil'
           )
         ]
       ),

@@ -32,6 +32,7 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         title: Text(
           'login'
@@ -46,7 +47,7 @@ class _LoginPageState extends State<LoginPage> {
                 height: 15,
               ),
               Text(
-                '[logo]',
+                'emee',
                 style: theme.textTheme.titleLarge,
               ),
               SizedBox(
@@ -103,10 +104,10 @@ class _LoginPageState extends State<LoginPage> {
                     // for a success
                     final loginRes = await loginAcc(_emailController.text, _passwordController.text);
 
-                    if(loginRes.statusCode == 201) {
+                    if(loginRes.statusCode == 200) {
                       final data = jsonDecode(loginRes.body);
 
-                      await _authService.saveToken(data['token']);
+                      await _authService.saveTokens(data['accessToken'], data['refreshToken']);
 
                       Navigator.pushReplacement(
                         context, 
@@ -116,6 +117,7 @@ class _LoginPageState extends State<LoginPage> {
                       );
                     }
                     else {
+                      print(loginRes.body);
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(content: Text(loginRes.body))
                       );
@@ -144,7 +146,7 @@ class _LoginPageState extends State<LoginPage> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    "Don't have an account?"
+                    "Tidak punya akun?"
                   ),
                   SizedBox(
                     width: 5

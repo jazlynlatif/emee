@@ -22,7 +22,7 @@ class TextMessage extends StatelessWidget {
             child: TextField(
               controller: _messageController,
               decoration: InputDecoration(
-                hintText: 'Type a message',
+                hintText: 'Ketik pesan',
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(30),
                   borderSide: BorderSide(
@@ -30,10 +30,6 @@ class TextMessage extends StatelessWidget {
                   )
                 ),
                 contentPadding: EdgeInsets.symmetric(vertical: 16, horizontal: 10),
-                suffixIcon: IconButton(
-                  onPressed: () {}, 
-                  icon: Icon(Icons.camera_alt_outlined)
-                )
               ),
               maxLines: 3,
               minLines: 1,
@@ -53,7 +49,6 @@ class TextMessage extends StatelessWidget {
                 if(_messageController.text.isNotEmpty || _messageController.text != '') {
                   await sendMessage(
                     _messageController.text, 
-                    service, 
                     report
                   );
                   _messageController.clear();

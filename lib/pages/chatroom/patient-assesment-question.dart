@@ -1,22 +1,28 @@
 import 'package:flutter/material.dart';
 
+class AssesmentQuestionController {
+  void Function()? forceSubmit;
+}
+
 class AssesmentQuestion extends StatefulWidget {
   final List<dynamic> questionList;
   final List<List<String>> answerList;
   final CallBack callback;
+  final AssesmentQuestionController controller;
 
   const AssesmentQuestion({
     super.key,
     required this.questionList,
     required this.answerList,
-    required this.callback
+    required this.callback,
+    required this.controller
   });
 
   @override
   State<AssesmentQuestion> createState() => _AssesmentQuestionState();
 }
 
-typedef CallBack = void Function(bool val);
+typedef CallBack = void Function(List<int> val);
 
 class _AssesmentQuestionState extends State<AssesmentQuestion> {
   late List<int> selectedIndex;
@@ -24,8 +30,12 @@ class _AssesmentQuestionState extends State<AssesmentQuestion> {
   void checkTest() {
     bool tOrF = selectedIndex.every((number) => number > -1);
     if (tOrF) {
-      widget.callback(true);
+      widget.callback(selectedIndex);
     }
+  }
+
+  void submitNow() {
+    widget.callback(selectedIndex);
   }
 
   @override
@@ -33,6 +43,7 @@ class _AssesmentQuestionState extends State<AssesmentQuestion> {
     // TODO: implement initState
     super.initState();
     selectedIndex = List<int>.filled(widget.questionList.length, -1);
+    widget.controller.forceSubmit = submitNow;
   }
   
   @override
@@ -41,6 +52,7 @@ class _AssesmentQuestionState extends State<AssesmentQuestion> {
     return ListView.builder(
       itemCount: selectedIndex.length,
       itemBuilder: (context, index) {
+        print(widget.answerList);
         final question = widget.questionList[index];
         final List<String> answers = widget.answerList[index];
         final int quesNo = index;

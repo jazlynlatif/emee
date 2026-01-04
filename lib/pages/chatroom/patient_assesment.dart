@@ -4,18 +4,21 @@ import 'package:emee/pages/chatroom/chatroom.dart';
 import 'package:emee/pages/chatroom/chatroom_api.dart';
 import 'package:emee/pages/chatroom/patient-assesment-question.dart';
 import 'package:emee/pages/chatroom/timer.dart';
+import 'package:emee/pages/home-page/profile_api.dart';
 import 'package:flutter/material.dart';
 
 class PatientAssesment extends StatefulWidget {
   final int serviceid;
-  final int victimid;
-  final int victimNumId;
+  final int indicator1;
+  final int indicator2;
+  final int reportid;
 
   const PatientAssesment({
     super.key,
     required this.serviceid,
-    required this.victimid,
-    required this.victimNumId
+    required this.indicator1,
+    required this.indicator2,
+    required this.reportid,
   });
 
   @override
@@ -23,8 +26,13 @@ class PatientAssesment extends StatefulWidget {
 }
 
 class _PatientAssesmentState extends State<PatientAssesment> {
+  final controller = AssesmentQuestionController();
 
-  void completeAssesment() async {
+  void onTimeUp() {
+    controller.forceSubmit?.call();
+  }
+
+  void completeAssesment(List<int> userAnswer, List<List<int>> answerId, int assesmentid, List<int> questionId) async {
     showDialog(
       context: context, 
       barrierDismissible: false,
@@ -38,7 +46,7 @@ class _PatientAssesmentState extends State<PatientAssesment> {
             height: 60,
             child: Center(
               child : Text(
-                'Terimakasih telah isi Assesment!',
+                'Terimakasih telah isi evaluasi!',
                 style: TextStyle(
                   fontSize: 17,
                   fontWeight: FontWeight.bold
@@ -50,35 +58,54 @@ class _PatientAssesmentState extends State<PatientAssesment> {
       }
     );
 
+    final List<dynamic> finalUserAnswer = [];
+    for(int i =0;i< userAnswer.length;i++) {
+      final answerid = userAnswer[i];
+      late final final_answerid;
+      if(answerid == -1) {
+        final_answerid = null;
+      }
+      else {
+        final_answerid = answerId[i][answerid];
+      }
+
+      finalUserAnswer.add(final_answerid);
+    }
+
     await Future.delayed(const Duration(seconds: 1));
     if (context.mounted) Navigator.pop(context);
 
-    final report = await postReport(widget.serviceid);
+    late final report;
+    late final List<dynamic> mednotes;
 
+    try {
+      report = await postUserAnswer(widget.reportid, assesmentid, finalUserAnswer, questionId);
 
-    if(context.mounted && report != null) {
-      if(report.statusCode == 200) {
-        final reportdetails = jsonDecode(report.body)[0];
-        final report_id = reportdetails['insertId'];
-        Navigator.pushAndRemoveUntil(
-          context, 
-          MaterialPageRoute(builder: (context) => ChatRoom(service: widget.serviceid, reportid: report_id)), 
-          (Route<dynamic> route) => false
-        );
+      if(widget.indicator1 == 0) {
+        mednotes = await fetchData('mednotes');
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(report.body))
-        );
+        mednotes = [];
       }
-    }
-                            
+
+      print(mednotes);
+
+      Navigator.pushAndRemoveUntil(
+        context, 
+        MaterialPageRoute(builder: (context) => ChatRoom(service: widget.serviceid, reportid: widget.reportid, mednotes: mednotes,)), 
+        (Route<dynamic> route) => false
+      );
+
+    } catch (err) {
+      ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(err.toString()))
+      );
+    }               
   }
 
   @override
   Widget build(BuildContext context) {
-
     return FutureBuilder(
-      future: getAssesment(widget.serviceid, widget.victimid, widget.victimNumId), 
+      future: getAssesment(widget.serviceid, widget.indicator1, widget.indicator2), 
       builder: (context, snapshot) {
         if(snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
@@ -94,31 +121,56 @@ class _PatientAssesmentState extends State<PatientAssesment> {
 
         final assesmentData = snapshot.data!;
 
+        print(widget.serviceid);
+
+        final assesmentid = assesmentData['assesment_id'];
+
         final questionListRaw = assesmentData['question_list'];
         final List questionList = questionListRaw.map((q) => q['question_text']).toList();
 
-        final answerListRaw = assesmentData['answer_list'];
+        final List<dynamic> answerListRaw = assesmentData['answer_list'];
         final Map<int, List<String>> answerListMap = {};
+        final Map<int, List<int>> answerIdMap = {};
+
         
         for (var item in answerListRaw) {
           final qid = item['question_id'];
           final atext = item['answer_text'];
+          final aid = item['id'];
 
-          if(!answerListMap.containsKey(qid)) {
-            answerListMap[qid] = [];
-          }
-
+          answerListMap.putIfAbsent(qid, () => []);
           answerListMap[qid]!.add(atext);
+
+          answerIdMap.putIfAbsent(qid, () => []);
+          answerIdMap[qid]!.add(aid);
         }
         final List<List<String>> answerList = answerListMap.values.toList();
+        final List<List<int>> answerIdList = answerIdMap.values.toList();
 
+        // print(answerIdMap);
+        List<int> questionId = answerIdMap.keys.toList();
+        print(questionId);
+
+
+        print('this is the questionid');
+        print(answerIdList);
+
+        print('this is the question list raw');
+        print(questionId);
+
+        print('this is the questionlist');
         print(questionList);
+
+        print('this is the answerid');
+        print(answerIdList);
+
+        print('this is the answerlist');
         print(answerList);
         
         return Scaffold(
           appBar: AppBar(
             title: Text(
-              'Victim Assesment'
+              'Evaluasi'
             ),
           ),
           body: Column(
@@ -129,11 +181,11 @@ class _PatientAssesmentState extends State<PatientAssesment> {
                   Text(
                     'laporan akan secara otomatis dikirim dalam  '
                   ),
-                  CountdownTimer(callback: (val) => setState(() => completeAssesment()),)
+                  CountdownTimer(callback: (val) => setState(() => onTimeUp()),)
                 ],
               ),
               Expanded(
-                child: AssesmentQuestion(questionList: questionList, answerList: answerList, callback: (val) => setState(() => completeAssesment()))
+                child: AssesmentQuestion(questionList: questionList, answerList: answerList, callback: (val) => completeAssesment(val, answerIdList, assesmentid, questionId), controller: controller,)
               ),
               SizedBox(
                 height: 10,

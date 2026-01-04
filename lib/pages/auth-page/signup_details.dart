@@ -37,9 +37,10 @@ class _SignUpDetailsState extends State<SignUpDetails> {
     final theme = Theme.of(context);
     DateTime? selectedDate;
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         title: Text(
-          'sign up'
+          'register'
         ),
       ),
       body: Form(
@@ -49,10 +50,10 @@ class _SignUpDetailsState extends State<SignUpDetails> {
             SizedBox(
                 height: 15,
             ),
-            Text(
-              '[logo]',
-              style: theme.textTheme.titleLarge,
-            ),
+            // Text(
+            //   '[logo]',
+            //   style: theme.textTheme.titleLarge,
+            // ),
             SizedBox(
               height: 30,
             ),
@@ -61,7 +62,7 @@ class _SignUpDetailsState extends State<SignUpDetails> {
               child: TextFormField(
                 decoration: InputDecoration(
                   label: const Text(
-                    'First Name'
+                    'Nama Depan'
                   ),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(20)
@@ -70,7 +71,7 @@ class _SignUpDetailsState extends State<SignUpDetails> {
                 controller: _firstNameController,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Enter your first name';
+                    return 'Masukkan nama depan';
                   }
                 },
               ),
@@ -83,7 +84,7 @@ class _SignUpDetailsState extends State<SignUpDetails> {
               child: TextFormField(
                 decoration: InputDecoration(
                   label: const Text(
-                    'Last Name'
+                    'Nama Belakang'
                   ),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(20)
@@ -92,7 +93,7 @@ class _SignUpDetailsState extends State<SignUpDetails> {
                 controller: _lastNameController,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Enter your last name';
+                    return 'Masukkan nama belakang';
                   }
                 },
               ),
@@ -130,7 +131,7 @@ class _SignUpDetailsState extends State<SignUpDetails> {
                 controller: _genderController,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Select your gender';
+                    return 'Masukkan gender';
                   }
                 },
               ),
@@ -145,7 +146,7 @@ class _SignUpDetailsState extends State<SignUpDetails> {
                 readOnly: true,
                 decoration: InputDecoration(
                   label: const Text(
-                    'Birth Date'
+                    'Tanggal Lahir'
                   ),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(20)
@@ -169,7 +170,7 @@ class _SignUpDetailsState extends State<SignUpDetails> {
                 },
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Enter your birth date';
+                    return 'Masukkan tanggal lahir';
                   }
                 },
               ),
@@ -182,7 +183,7 @@ class _SignUpDetailsState extends State<SignUpDetails> {
               child: TextFormField(
                 decoration: InputDecoration(
                   label: const Text(
-                    'Phone number'
+                    'Nomor Telepon'
                   ),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(20),
@@ -195,7 +196,7 @@ class _SignUpDetailsState extends State<SignUpDetails> {
                 controller: _phoneNumberController,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Enter your phone number';
+                    return 'Masukkan nomor telepon';
                   }
                 },
               ),

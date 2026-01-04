@@ -15,10 +15,13 @@ class _EmergencyContactsState extends State<EmergencyContacts> {
   final TextEditingController _contactController = TextEditingController();
   final TextEditingController _phonenumberController = TextEditingController();
 
+  final List<String> dropdownOptions = ['Edit', 'Delete'];
+  final Map<String, IconData> dropdownOptionsIcon = {'Edit' : Icons.edit, 'Delete' : Icons.delete};
+
   void doNum(String action, {String contactname = '', String phonenum = '', int contactId = -1}) {
     final theme = Theme.of(context);
 
-    if(action == 'edit') {
+    if(action == 'Edit') {
       _contactController.text = contactname;
       _phonenumberController.text = phonenum;
     }
@@ -28,6 +31,9 @@ class _EmergencyContactsState extends State<EmergencyContacts> {
       builder: (context) {
         return Container(
           height: 380,
+          decoration: BoxDecoration(
+            color: Colors.white
+          ),
           padding: EdgeInsets.symmetric(horizontal: 25, vertical: 35),
           child: Form(
             key: _formKey,
@@ -35,14 +41,14 @@ class _EmergencyContactsState extends State<EmergencyContacts> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  action == 'add' ? 'Add Contact' : 'Edit Contact',
+                  action == 'add' ? 'Tambah Kontak' : 'Edit Kontak',
                   style: theme.textTheme.titleLarge,
                 ),
                 SizedBox(
                   height: 15,
                 ),
                 Text(
-                  'Contact Name',
+                  'Nama Kontak',
                   style: theme.textTheme.titleSmall
                 ),
                 SizedBox(
@@ -50,7 +56,7 @@ class _EmergencyContactsState extends State<EmergencyContacts> {
                 ),
                 TextFormField(
                   decoration: InputDecoration(
-                    hintText: 'enter the contact name!',
+                    hintText: 'masukkan contact name disini!',
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(20)
                     ),
@@ -59,7 +65,7 @@ class _EmergencyContactsState extends State<EmergencyContacts> {
                   controller: _contactController,
                   validator: (value) {
                     if(value == null || value.isEmpty) {
-                      return "Enter the contact name!";
+                      return "Masukkan contact name!";
                     }
                   },
                 ),
@@ -67,7 +73,7 @@ class _EmergencyContactsState extends State<EmergencyContacts> {
                   height: 15,
                 ),
                 Text(
-                  'Phone Number',
+                  'Nomor Telepon',
                   style: theme.textTheme.titleSmall
                 ),
                 SizedBox(
@@ -75,7 +81,7 @@ class _EmergencyContactsState extends State<EmergencyContacts> {
                 ),
                 TextFormField(
                   decoration: InputDecoration(
-                    hintText: 'enter the phone number!',
+                    hintText: 'masukkan phone number disini!',
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(20)
                     ),
@@ -88,7 +94,7 @@ class _EmergencyContactsState extends State<EmergencyContacts> {
                   keyboardType: TextInputType.numberWithOptions(),
                   validator: (value) {
                     if(value == null || value.isEmpty) {
-                      return "Enter the phone number!";
+                      return "Masukkan phone number!";
                     }
                   },
                 ),
@@ -123,7 +129,7 @@ class _EmergencyContactsState extends State<EmergencyContacts> {
                       backgroundColor: theme.colorScheme.primary
                     ),
                     child: Text(
-                      action == 'add' ? 'Add Contact' : 'Edit Contact',
+                      action == 'add' ? 'Tambah Kontak' : 'Edit Kontak',
                       style: TextStyle(
                         color: Colors.black
                       ),
@@ -170,12 +176,21 @@ class _EmergencyContactsState extends State<EmergencyContacts> {
         final userData = snapshot.data!;
 
         return Scaffold(
+          backgroundColor: Colors.white,
           appBar: AppBar(
-            title: Text('Emergency Contacts'),
+            title: Text('Kontak Darurat'),
           ),
           body: Column(
             children: [
-              userData.isEmpty ? Center(child: Text('No data available'))
+              userData.isEmpty 
+              ? Column(
+                children: [
+                  SizedBox(
+                    height: 15,
+                  ),
+                  Center(child: Text('Tidak ada kontak :)')),
+                ],
+              )
               : Expanded(
                 child: ListView.builder(
                   scrollDirection: Axis.vertical,
@@ -185,14 +200,21 @@ class _EmergencyContactsState extends State<EmergencyContacts> {
                     final data = userData[index];
                     return Container(
                       width : double.infinity,
-                      margin: EdgeInsets.all(20),
+                      margin: EdgeInsets.symmetric(horizontal: 10, vertical: 0),
                       padding: EdgeInsets.all(15),
                       decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(15),
-                        border: Border.all(
-                          color: theme.colorScheme.primary,
-                          width: 1.5
-                        )
+                        color: Colors.white,
+                        // border: Border.all(
+                        //   color: Colors.grey
+                        // )
+                        // boxShadow: [
+                        //   BoxShadow(
+                        //     color: Colors.grey.withOpacity(0.5), 
+                        //     spreadRadius: 3, 
+                        //     blurRadius: 5, 
+                        //     offset: Offset(0, 3), 
+                        //   )
+                        // ]
                       ),
                       child: Row(
                         children: [
@@ -218,12 +240,34 @@ class _EmergencyContactsState extends State<EmergencyContacts> {
                             ],
                           ),
                           Spacer(),
-                          IconButton(
-                            onPressed: () {
-                              print(data['id']);
-                              doNum('edit', contactname: data['contact_name'], phonenum: data['phone_number'], contactId: data['id']);
-                            }, 
-                            icon: Icon(Icons.edit)
+                          PopupMenuButton(
+                            icon: Icon(Icons.more_horiz),
+                            onSelected: (value) async {
+                              if(value == 'Edit') {
+                                doNum('Edit', contactname: data['contact_name'], phonenum: data['phone_number'], contactId: data['id']);
+                              } 
+                              else if(value == 'Delete') {
+                                final dataDelete = await deleteData(data['id'], 2);
+                                print(dataDelete.statusCode);
+                                if(dataDelete.statusCode == 204) {
+                                  setState(() {});
+                                }
+                              }
+                            },
+                            itemBuilder: (context) {
+                              return dropdownOptions.map((String value) {
+                                return PopupMenuItem(
+                                  value: value,
+                                  child: Row(
+                                    children: [
+                                      Text(value),
+                                      Spacer(),
+                                      Icon(dropdownOptionsIcon[value])
+                                    ],
+                                  )
+                                );
+                              }).toList();
+                            },
                           )
                         ],
                       ),
@@ -237,6 +281,8 @@ class _EmergencyContactsState extends State<EmergencyContacts> {
           ),
           floatingActionButton: FloatingActionButton(
             onPressed: () {
+              _contactController.clear();
+              _phonenumberController.clear();
               doNum('add');
             }, 
             tooltip: 'Add a note',

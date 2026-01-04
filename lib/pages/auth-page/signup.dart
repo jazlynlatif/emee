@@ -33,9 +33,10 @@ class _SignUpState extends State<SignUp> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         title: Text(
-          'sign up'
+          'register'
         ),
       ),
       body: Form(
@@ -45,10 +46,10 @@ class _SignUpState extends State<SignUp> {
             SizedBox(
                 height: 15,
             ),
-            Text(
-              '[logo]',
-              style: theme.textTheme.titleLarge,
-            ),
+            // Text(
+            //   '[logo]',
+            //   style: theme.textTheme.titleLarge,
+            // ),
             SizedBox(
               height: 30,
             ),
@@ -107,7 +108,7 @@ class _SignUpState extends State<SignUp> {
                   if (registerRes.statusCode == 201) {
                     final data = jsonDecode(registerRes.body);
 
-                    await _authService.saveToken(data['token']);
+                    await _authService.saveTokens(data['accessToken'], data['refreshToken']);
 
                     Navigator.pushReplacement(
                       context, 
@@ -126,7 +127,7 @@ class _SignUpState extends State<SignUp> {
                 padding: EdgeInsets.symmetric(horizontal: 50, vertical: 10),
               ),
               child: Text(
-                'sign up',
+                'register',
                 style: TextStyle(
                   color: Colors.black,
                   fontWeight: FontWeight.bold,
@@ -141,7 +142,7 @@ class _SignUpState extends State<SignUp> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
-                  "Already have an account?"
+                  "Sudah punya akun?"
                 ),
                 SizedBox(
                   width: 5

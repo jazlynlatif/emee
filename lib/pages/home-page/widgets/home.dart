@@ -54,6 +54,9 @@ class _HomePageState extends State<HomePage> {
       Navigator.of(context).pop();
     }
 
+    print(position.latitude);
+    print(position.longitude);
+;
     if(context.mounted && position != null) {
       final theme = Theme.of(context);
       showDialog(
@@ -69,6 +72,7 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         title : const Text(
           'emee'
@@ -93,14 +97,14 @@ class _HomePageState extends State<HomePage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'MEDIC',
+                      Services.names[0],
                       style : theme.textTheme.titleLarge
                     ),
                     SizedBox(
                       height: 4,
                     ),
                     Text(
-                      'For Medical Emergencies',
+                      Services.tags[0],
                       style: TextStyle(
                         fontStyle: FontStyle.italic
                       ),
@@ -132,14 +136,14 @@ class _HomePageState extends State<HomePage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'FIRE DEPT',
+                      Services.names[1],
                       style : theme.textTheme.titleLarge
                     ),
                     SizedBox(
                       height: 4,
                     ),
                     Text(
-                      'For Emergency Assistance',
+                      Services.tags[1],
                       style: TextStyle(
                         fontStyle: FontStyle.italic
                       ),
@@ -156,13 +160,13 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
             const Spacer(),
-            Text(
-              '[logo]',
-              style: theme.textTheme.titleLarge,
-            ),
-            SizedBox(
-              height: 30,
-            )
+            // Text(
+            //   '[logo]',
+            //   style: theme.textTheme.titleLarge,
+            // ),
+            // SizedBox(
+            //   height: 30,
+            // )
           ],
         ),
       )

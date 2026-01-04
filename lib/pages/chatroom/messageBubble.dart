@@ -34,6 +34,7 @@ class MessageBubble extends StatelessWidget {
             style: TextStyle(
               fontSize: 16
             ),
+            textAlign: align == Alignment.centerRight ? TextAlign.right : TextAlign.left,
           ),
           Text(
             timestamp,

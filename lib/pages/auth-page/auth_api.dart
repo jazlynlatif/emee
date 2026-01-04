@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:emee/services/auth_service.dart';
-import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
 
 final AuthService _authService = AuthService();
@@ -30,7 +29,7 @@ Future completeRegister(String firstname, String lastname, String gender, String
   try {
     String? token;
 
-    token = await _authService.getToken();
+    token = await _authService.getAccessToken();
 
     final url = await http.post(
       Uri.parse('http://10.0.2.2:5001/register/complete'),
@@ -69,5 +68,26 @@ Future loginAcc(email, password) async {
   } catch(err) {
     return http.Response(err.toString(), 500);
   }
+}
+
+Future logout() async {
+  final auth = AuthService();
+  final token = await auth.getAccessToken();
+
+  try {
+    if (token != null) {
+      final url = await http.post(
+        Uri.parse('http://10.0.2.2:5001/logout'),
+        headers: {
+          'Authorization': 'Bearer $token',
+        },
+      );
+    }
+
+    await auth.clearTokens();
+  } catch(err) {
+    return http.Response(err.toString(), 500);
+  }
+  
 }
 

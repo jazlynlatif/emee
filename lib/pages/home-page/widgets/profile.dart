@@ -1,3 +1,4 @@
+import 'package:emee/pages/auth-page/auth_api.dart';
 import 'package:emee/pages/home-page/emergency_contacts.dart';
 import 'package:emee/pages/home-page/medical_notes.dart';
 import 'package:emee/pages/home-page/profile_api.dart';
@@ -13,7 +14,7 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage> {
   int? lastIndex;
-  List<String> additionalInfo = ['Medical Notes', 'Emergency Contacts'];
+  List<String> additionalInfo = ['Catatan Medis', 'Kontak Darurat'];
   List<Widget> additionalInfoPages = [const MedicalNotes(), const EmergencyContacts()];
 
   // @override
@@ -50,15 +51,29 @@ class _ProfilePageState extends State<ProfilePage> {
       context: context, 
       builder: (context) {
         return AlertDialog(
+          backgroundColor: Colors.white,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(5)
+          ),
           title: const Text(
-            'Log out'
+            'Log out',
+            style: TextStyle(
+              color: Colors.black,
+              fontWeight: FontWeight.bold
+            ),
           ),
           content: const Text(
-            'are you sure?'
+            'are you sure?',
+            style: TextStyle(
+              fontStyle: FontStyle.italic
+            ),
           ),
           actions: [
             TextButton(
-              onPressed: () {
+              onPressed: () async {
+
+                await logout();
+
                 Navigator.pushAndRemoveUntil(
                   context, 
                   MaterialPageRoute(
@@ -120,22 +135,26 @@ class _ProfilePageState extends State<ProfilePage> {
 
         final userData = snapshot.data![0];
 
+        final gender = userData['gender'].toString().toLowerCase() == 'female' ? 'Perempuan' : 'Laki - laki';
+
         return Scaffold(
+          backgroundColor: Colors.white,
           appBar: AppBar(
             title : const Text(
-              'profile'
+              'Profil'
             )
           ),
           body : Container(
-            padding: EdgeInsets.all(20),
+            padding: EdgeInsets.all(30),
             child: Column(
               children: [
                 Container(
                   padding: EdgeInsets.all(20),
+                  width: double.infinity,
                   decoration: BoxDecoration(
                     color: Color.fromRGBO(255, 255, 255, 1),
-                    borderRadius: BorderRadius.circular(20),
-                    border: Border.all(color: theme.colorScheme.primary, width : 1)
+                    borderRadius: BorderRadius.circular(25),
+                    border: Border.all(color: theme.colorScheme.primary, width : 1.5)
                   ),
                   child: Row(
                     children: [
@@ -146,31 +165,34 @@ class _ProfilePageState extends State<ProfilePage> {
                       SizedBox(
                         width: 15,
                       ),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            "${userData['first_name']} ${userData['last_name']}",
-                            style: theme.textTheme.titleLarge,
-                          ),
-                          Text(
-                            "${userData['gender']} (${getAge(userData['birth_date']).toString()})",
-                            style: theme.textTheme.titleMedium,
-                          ),
-                        ],
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              "${userData['first_name']} ${userData['last_name']}",
+                              style: theme.textTheme.titleLarge,
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 1,
+                            ),
+                            Text(
+                              "${gender} (${getAge(userData['birth_date']).toString()})",
+                              style: theme.textTheme.titleMedium,
+                            ),
+                          ],
+                        ),
                       ),
-                      Spacer(),
-                      IconButton(
-                        onPressed: () {
-                          // Navigator.push(
-                          //   context, 
-                          //   MaterialPageRoute(
-                          //     builder: (context) => const EditProfile()
-                          //   )
-                          // );
-                        }, 
-                        icon: Icon(Icons.edit)
-                      )
+                      // IconButton(
+                      //   onPressed: () {
+                      //     // Navigator.push(
+                      //     //   context, 
+                      //     //   MaterialPageRoute(
+                      //     //     builder: (context) => const EditProfile()
+                      //     //   )
+                      //     // );
+                      //   }, 
+                      //   icon: Icon(Icons.edit)
+                      // )
                     ],
                   ),
                 ),
@@ -180,7 +202,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 Align(
                   alignment: Alignment.centerLeft,
                   child: Text(
-                    'Additional information',
+                    'Infomasi tambahan',
                     style: theme.textTheme.titleSmall,
                   ),
                 ),
@@ -188,12 +210,19 @@ class _ProfilePageState extends State<ProfilePage> {
                   height: 10,
                 ),
                 Container(
-                  width : double.infinity,
-                  padding: EdgeInsets.only(top : 5, bottom : 5, left : 15, right : 10),
+                  width: double.infinity,
+                  padding: EdgeInsets.all(10),
                   decoration: BoxDecoration(
-                    color: Color.fromRGBO(255, 255, 255, 1),
-                    borderRadius: BorderRadius.circular(20),
-                    border: Border.all(color: theme.colorScheme.primary, width : 1)
+                    color: Colors.white,
+                    boxShadow: [
+                      BoxShadow(
+                        color: theme.colorScheme.primary, 
+                        spreadRadius: 0.5, 
+                        blurRadius: 2, 
+                        offset: Offset.zero, 
+                      )
+                    ],
+                    borderRadius: BorderRadius.circular(25)
                   ),
                   child: ListView.builder(
                     shrinkWrap: true,
@@ -211,12 +240,12 @@ class _ProfilePageState extends State<ProfilePage> {
                         },
                         child: Container(
                           margin: EdgeInsets.all(3),
-                          padding: EdgeInsets.symmetric(horizontal: 8, vertical: 10),
+                          padding: EdgeInsets.symmetric(horizontal: 8, vertical: 7),
                           child: Row(
                             children: [
                               Text(
                                 additionalInfo[index],
-                                style: theme.textTheme.titleMedium,
+                                style: theme.textTheme.titleSmall,
                               ),
                               Spacer(),
                               Icon(
@@ -235,41 +264,45 @@ class _ProfilePageState extends State<ProfilePage> {
                 Align(
                   alignment: Alignment.centerLeft,
                   child: Text(
-                    'Other actions',
+                    'Aksi lainnya',
                     style: theme.textTheme.titleSmall,
                   ),
                 ),
                 SizedBox(
                   height: 10,
                 ),
-                Container(
-                  width : double.infinity,
-                  padding: EdgeInsets.only(top : 5, bottom : 5, left : 15, right : 10),
-                  decoration: BoxDecoration(
-                    color: Color.fromRGBO(255, 255, 255, 1),
-                    borderRadius: BorderRadius.circular(20),
-                    border: Border.all(color: theme.colorScheme.primary, width : 1)
-                  ),
-                  child: GestureDetector(
-                    onTap: () {
-                      signOutButton();
-                    },
-                    child: Container(
-                      padding: EdgeInsets.symmetric(horizontal: 8, vertical: 10),
-                      child: Row(
-                        children: [
-                          Text(
-                            'Sign out',
-                            style: theme.textTheme.titleMedium,
-                          ),
-                          Spacer(),
-                          Icon(
-                            Icons.logout_outlined
-                          )
-                        ],
-                      ),
+                GestureDetector(
+                  onTap: () {
+                    signOutButton();
+                  },
+                  child: Container(
+                    width: double.infinity,
+                    padding: EdgeInsets.all(20),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      boxShadow: [
+                        BoxShadow(
+                          color: theme.colorScheme.primary, 
+                          spreadRadius: 0.5, 
+                          blurRadius: 2, 
+                          offset: Offset.zero, 
+                        )
+                      ],
+                      borderRadius: BorderRadius.circular(25)
                     ),
-                  )
+                    child: Row(
+                      children: [
+                        Text(
+                          'Sign out',
+                          style: theme.textTheme.titleSmall,
+                        ),
+                        Spacer(),
+                        Icon(
+                          Icons.logout_outlined
+                        )
+                      ],
+                    ),
+                  ),
                 ),
               ],
             ),

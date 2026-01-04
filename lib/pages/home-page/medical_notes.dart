@@ -15,8 +15,8 @@ class _MedicalNotesState extends State<MedicalNotes> {
   final TextEditingController _header = TextEditingController();
   final TextEditingController _note = TextEditingController();
 
-  final List<String> dropdownOptions = ['Edit', 'Delete'];
-  final Map<String, IconData> dropdownOptionsIcon = {'Edit' : Icons.edit, 'Delete' : Icons.delete};
+  final List<String> dropdownOptions = ['Edit', 'Hapus'];
+  final Map<String, IconData> dropdownOptionsIcon = {'Edit' : Icons.edit, 'Hapus' : Icons.delete};
 
   void doNote(String action, {String title = '', String note = '', int noteId = -1}) {
     final theme = Theme.of(context);
@@ -30,6 +30,9 @@ class _MedicalNotesState extends State<MedicalNotes> {
       context: context, 
       builder: (context) {
         return Container(
+          decoration: BoxDecoration(
+            color: Colors.white
+          ),
           height: 400,
           padding: EdgeInsets.symmetric(horizontal: 25, vertical: 35),
           child: Form(
@@ -38,7 +41,7 @@ class _MedicalNotesState extends State<MedicalNotes> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  action == 'add' ? 'Add Note' : 'Edit Note',
+                  action == 'add' ? 'Tambah Catatan' : 'Edit Catatan',
                   style: theme.textTheme.titleLarge,
                 ),
                 SizedBox(
@@ -53,7 +56,7 @@ class _MedicalNotesState extends State<MedicalNotes> {
                 ),
                 TextFormField(
                   decoration: InputDecoration(
-                    hintText: 'enter your header!',
+                    hintText: 'masukkan header disini!',
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(20)
                     ),
@@ -62,7 +65,7 @@ class _MedicalNotesState extends State<MedicalNotes> {
                   controller: _header,
                   validator: (value) {
                     if(value == null || value.isEmpty) {
-                      return "Enter your header!";
+                      return "Masukkan header!";
                     }
                   },
                 ),
@@ -82,7 +85,7 @@ class _MedicalNotesState extends State<MedicalNotes> {
                   keyboardType: TextInputType.multiline,
                   textAlignVertical: TextAlignVertical.top,
                   decoration: InputDecoration(
-                    hintText: 'enter your notes!',
+                    hintText: 'masukkan notes disini!',
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(20)
                     ),
@@ -91,7 +94,7 @@ class _MedicalNotesState extends State<MedicalNotes> {
                   controller: _note,
                   validator: (value) {
                     if(value == null || value.isEmpty) {
-                      return "Enter your note!";
+                      return "Masukkan note!";
                     }
                   },
                 ),
@@ -126,7 +129,7 @@ class _MedicalNotesState extends State<MedicalNotes> {
                       backgroundColor: theme.colorScheme.primary
                     ),
                     child: Text(
-                      action == 'add' ? 'add note' : 'edit note',
+                      action == 'add' ? 'tambah catatan' : 'edit catatan',
                       style: TextStyle(
                         color: Colors.black
                       ),
@@ -174,13 +177,22 @@ class _MedicalNotesState extends State<MedicalNotes> {
         final userData = snapshot.data!;
 
         return Scaffold(
+          backgroundColor: Colors.white,
           appBar: AppBar(
-            title: Text('Medical Notes'),
+            title: Text('Catatan Medis'),
           ),
           body : SafeArea(
             child: Column(
               children: [
-                userData.isEmpty ? Center(child: Text('No data available')) 
+                userData.isEmpty 
+                ? Column(
+                  children: [
+                    SizedBox(
+                      height: 15,
+                    ),
+                    Center(child: Text('Tidak ada catatan :)')),
+                  ],
+                ) 
                 : Expanded(
                   flex : 1,
                   child: ListView.builder(
@@ -193,6 +205,7 @@ class _MedicalNotesState extends State<MedicalNotes> {
                         width: double.infinity,
                         margin: EdgeInsets.all(20),
                         decoration: BoxDecoration(
+                          color: Colors.white,
                           borderRadius: BorderRadius.circular(15),
                           border: Border.all(
                             color: theme.colorScheme.primary
@@ -205,7 +218,7 @@ class _MedicalNotesState extends State<MedicalNotes> {
                               width: double.infinity,
                               padding: EdgeInsets.symmetric(vertical: 8, horizontal: 12),
                               decoration: BoxDecoration(
-                                color: Colors.pink[50],
+                                // color: Colors.pink[50],
                                 borderRadius: BorderRadius.vertical(
                                   top : Radius.circular(15)
                                 )
@@ -223,8 +236,8 @@ class _MedicalNotesState extends State<MedicalNotes> {
                                       if(value == 'Edit') {
                                         doNote(value, title: data['title'], note: data['notes'], noteId: data['id']);
                                       } 
-                                      else if(value == 'Delete') {
-                                        final dataDelete = await deleteData(data['id']);
+                                      else if(value == 'Hapus') {
+                                        final dataDelete = await deleteData(data['id'], 1);
                                         if(dataDelete.statusCode == 204) {
                                           setState(() {});
                                         }
@@ -250,9 +263,12 @@ class _MedicalNotesState extends State<MedicalNotes> {
                             ),
                             Container(
                               width: double.infinity,
-                              padding: EdgeInsets.all(13),
+                              padding: EdgeInsets.symmetric(horizontal: 13),
                               decoration: BoxDecoration(),
                               child: Text(data['notes'])
+                            ),
+                            SizedBox(
+                              height: 13,
                             )
                           ],
                         ),
@@ -265,9 +281,11 @@ class _MedicalNotesState extends State<MedicalNotes> {
           ),
           floatingActionButton: FloatingActionButton(
             onPressed: () {
+              _note.clear();
+              _header.clear();
               doNote("add");
             }, 
-            tooltip: 'Add a note',
+            tooltip: 'Tambah catatan',
             backgroundColor: theme.colorScheme.primary,
             child: Icon(Icons.add),
           ),
