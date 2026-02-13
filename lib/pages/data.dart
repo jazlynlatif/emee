@@ -33,7 +33,7 @@ class ReportPopUpData {
     'Hanya satu', 'Lebih dari satu' 
   ];
   static const List<String> fireIndicator1 = [
-    'Bangunan', 'Lahan/Luar', 'Objek/Lainnya'
+    'Bangunan', 'Lahan/Luar', 'Objek/Lain'
   ];
   static const List<String> fireIndicator2 = [
     'Iya', 'Tidak' 

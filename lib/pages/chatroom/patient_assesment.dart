@@ -44,7 +44,8 @@ class _PatientAssesmentState extends State<PatientAssesment> {
           ),
           content: const SizedBox(
             height: 60,
-            child: Center(
+            child: Align(
+              alignment: Alignment.center,
               child : Text(
                 'Terimakasih telah isi evaluasi!',
                 style: TextStyle(
@@ -179,7 +180,10 @@ class _PatientAssesmentState extends State<PatientAssesment> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    'laporan akan secara otomatis dikirim dalam  '
+                    'laporan akan secara otomatis dikirim dalam  ',
+                    style: TextStyle(
+                      fontSize: 10
+                    ),
                   ),
                   CountdownTimer(callback: (val) => setState(() => onTimeUp()),)
                 ],

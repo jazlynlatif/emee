@@ -81,7 +81,7 @@ class _MedicalNotesState extends State<MedicalNotes> {
                 ),
                 TextFormField(
                   minLines: 2,
-                  maxLines: 6,
+                  maxLines: 2,
                   keyboardType: TextInputType.multiline,
                   textAlignVertical: TextAlignVertical.top,
                   decoration: InputDecoration(
@@ -150,38 +150,38 @@ class _MedicalNotesState extends State<MedicalNotes> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return FutureBuilder(
-      future: fetchData('mednotes'),
-      builder: (context, snapshot) {
-        if(snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(child: CircularProgressIndicator());
-        }
+    return Scaffold(
+      resizeToAvoidBottomInset: true,
+      backgroundColor: Colors.white,
+      appBar: AppBar(
+        title: Text('Catatan Medis'),
+      ),
+      body : FutureBuilder(
+        future: fetchData('mednotes'),
+        builder: (context, snapshot) {
+          if(snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
 
-        if(snapshot.hasError) {
-          return Center(child: Text("Error : ${snapshot.error}"),);
-        }
+          if(snapshot.hasError) {
+            return Center(child: Text("Error : ${snapshot.error}"),);
+          }
 
-        if(!snapshot.hasData || snapshot.data == null) {
-          print('null i guess');
-          return const Center(child: Text("No data"));
-        }
+          if(!snapshot.hasData || snapshot.data == null) {
+            print('null i guess');
+            return const Center(child: Text("No data"));
+          }
 
-        // if (snapshot.hasData) {
-        //   final data = snapshot.data;
+          // if (snapshot.hasData) {
+          //   final data = snapshot.data;
 
-        //   if (data is Map && data.containsKey("error")) {
-        //     return Center(child: Text("Unauthorized. Please log in again."));
-        //   }
-        // }
+          //   if (data is Map && data.containsKey("error")) {
+          //     return Center(child: Text("Unauthorized. Please log in again."));
+          //   }
+          // }
 
-        final userData = snapshot.data!;
-
-        return Scaffold(
-          backgroundColor: Colors.white,
-          appBar: AppBar(
-            title: Text('Catatan Medis'),
-          ),
-          body : SafeArea(
+          final userData = snapshot.data!;
+          return SafeArea(
             child: Column(
               children: [
                 userData.isEmpty 
@@ -278,20 +278,20 @@ class _MedicalNotesState extends State<MedicalNotes> {
                 ),
               ],
             ),
-          ),
-          floatingActionButton: FloatingActionButton(
-            onPressed: () {
-              _note.clear();
-              _header.clear();
-              doNote("add");
-            }, 
-            tooltip: 'Tambah catatan',
-            backgroundColor: theme.colorScheme.primary,
-            child: Icon(Icons.add),
-          ),
-          floatingActionButtonLocation: FloatingActionButtonLocation.miniEndFloat,
-        );
-      }
+          );
+        }
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          _note.clear();
+          _header.clear();
+          doNote("add");
+        }, 
+        tooltip: 'Tambah catatan',
+        backgroundColor: theme.colorScheme.primary,
+        child: Icon(Icons.add),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.miniEndFloat,
     );
   }
 }

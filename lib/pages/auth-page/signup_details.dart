@@ -37,6 +37,7 @@ class _SignUpDetailsState extends State<SignUpDetails> {
     final theme = Theme.of(context);
     DateTime? selectedDate;
     return Scaffold(
+      resizeToAvoidBottomInset: true,
       backgroundColor: Colors.white,
       appBar: AppBar(
         title: Text(
@@ -104,6 +105,7 @@ class _SignUpDetailsState extends State<SignUpDetails> {
             Container(
               padding: EdgeInsets.symmetric(horizontal: 30),
               child: TextFormField(
+                readOnly: true,
                 decoration: InputDecoration(
                   label: const Text(
                     'Gender'
@@ -211,16 +213,17 @@ class _SignUpDetailsState extends State<SignUpDetails> {
                   final _birthdate = (_birthDateController.text).toString();
                   print('success');
                   final regisAddInfo = await completeRegister(_firstNameController.text, _lastNameController.text, _genderController.text, _birthdate, _phoneNumberController.text);
-
+      
                   print('success : after regisAddInfo');
-
-                  if (regisAddInfo.statusCode == 201) {
+      
+                  if (regisAddInfo.statusCode == 200) {
                     Navigator.pushReplacement(
                       context, 
                       MaterialPageRoute(builder: (context) => const NavPage())
                     );
                   }
                   else {
+                    print('triggered');
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(content: Text(regisAddInfo.body))
                     );

@@ -57,7 +57,7 @@ class _ChatRoomState extends State<ChatRoom> {
                   Text(
                     'Laporan Selesai!',
                     style: TextStyle(
-                      fontSize: 17,
+                      fontSize: 15,
                       fontWeight: FontWeight.bold
                     ),
                   ),
@@ -68,7 +68,7 @@ class _ChatRoomState extends State<ChatRoom> {
                     'terima kasih telah percaya pada kami',
                     style: TextStyle(
                       fontStyle: FontStyle.italic,
-                      fontSize: 14
+                      fontSize: 10
                     ),
                   )
                 ],
@@ -191,6 +191,9 @@ class _ChatRoomState extends State<ChatRoom> {
     );
   }
 
+
+  bool _checkUnit = false;
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -231,107 +234,128 @@ class _ChatRoomState extends State<ChatRoom> {
         //   : SizedBox(width: 10,),
         //   SizedBox(width: 20,)
         // ],
+        // actions: [
+        //   ElevatedButton(
+        //     onPressed: () {
+        //       if (_checkUnit == false) {
+        //         ScaffoldMessenger.of(context).showSnackBar(
+        //           SnackBar(content: Text('Unit Location Access Not Available'))
+        //         );
+        //       }
+        //     }, 
+        //     style: ElevatedButton.styleFrom(
+        //       backgroundColor: _checkUnit ? Colors.green : Colors.grey[350]
+        //     ),
+        //     child: Text(
+        //       'check unit',
+        //       style: TextStyle(
+        //         color: _checkUnit ? Colors.white : Colors.black
+        //       ),
+        //     )
+        //   ),
+        //   SizedBox(
+        //     width: 5,
+        //   )
+        // ],
       ),
       body: Column(
         children: [
-          StreamBuilder(
-            stream: getMessageAndStatus(widget.reportid), 
-            builder: (context, snapshot) {
-              if(snapshot.connectionState == ConnectionState.waiting) {
-                return const Center(child: CircularProgressIndicator());
-              }
-          
-              if(snapshot.hasError) {
-                return Center(child: Text("Error : ${snapshot.error}"),);
-              }
-          
-              if(!snapshot.hasData || snapshot.data == null) {
-                return const Center(child: Text("No data"));
-              }
+          Expanded(
+            child: StreamBuilder(
+              stream: getMessageAndStatus(widget.reportid), 
+              builder: (context, snapshot) {
+                if(snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+            
+                if(snapshot.hasError) {
+                  return Center(child: Text("Error : ${snapshot.error}"),);
+                }
+            
+                if(!snapshot.hasData || snapshot.data == null) {
+                  return const Center(child: Text("No data"));
+                }
+            
+            
+                final initialData = snapshot.data!;
+            
+                final userData = initialData['message'];
+                final int progress = initialData['progress'];
+                final endedat = initialData['endedat'];
+            
+                if (!_endReport && (endedat != null || progress == 6)) {
+                  _endReport = true;
+            
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    if (!mounted) return;
+                    sessionDone();
+                  });
+                }
+            
+            
+                print(_checkUnit);
+            
+                print(progress);
+            
+                // if (progress == 6) {
+                //   endReport = true;
+                // }
 
-
-              final initialData = snapshot.data!;
-          
-              final userData = initialData['message'];
-              final int progress = initialData['progress'];
-              final endedat = initialData['endedat'];
-
-              if (endedat != null) {
-                print('i am trigerrrrrr');
-              }
-
-              if (!_endReport && (endedat != null || progress == 6)) {
-                _endReport = true;
-
-                WidgetsBinding.instance.addPostFrameCallback((_) {
-                  if (!mounted) return;
-                  sessionDone();
-                });
-              }
-
-          
-              print(initialData);
-
-              print(progress);
-
-              // if (progress == 6) {
-              //   endReport = true;
-              // }
-          
-              return Column(
-                children: [
-                  Container(
-                    width: double.infinity,
-                    padding: EdgeInsets.all(10),
-                    decoration: BoxDecoration(
-                      color: progress == 1 ?Colors.black12 : progress == 6 ? Colors.blue[100] :Color.fromRGBO(174, 217, 167, 0.5)
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          ReportChatroom.progressNames[progress-1],
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        SizedBox(
-                          width: 10,
-                        ),
-                        theicons[progress-1]
-                      ],
-                    ),
-                  ),
-                  Container(
-                    width: double.infinity,
-                    margin: EdgeInsets.all(5),
-                    decoration: BoxDecoration(),
-                    child: userData.isEmpty ?
-                    // ? widget.mednotes.isNotEmpty 
-                    //     ? Align(alignment: Alignment.centerRight,child: medNotesAppear()) :
-                        Center(child: Text('mulai percakapan sekarang!')) 
-                      : ListView.builder(
-                        shrinkWrap: true,
-                        itemCount: userData.length,
-                        itemBuilder: (context, index) {
-                          final data = userData[index];
-                          final align = data['sender'] == 0 ? Alignment.centerRight : Alignment.centerLeft;
-                          return Align(
-                            alignment: align,
-                            child: MessageBubble(
-                              message: data['text_content'], 
-                              align: align, 
-                              timeString: data['created_at']
-                            ),
-                          );
-                        }
+                if(progress>2) {
+                  _checkUnit = true;
+                }
+            
+                return Column(
+                  children: [
+                    Container(
+                      width: double.infinity,
+                      padding: EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        color: progress == 1 ?Colors.black12 : progress == 6 ? Colors.blue[100] :Color.fromRGBO(174, 217, 167, 0.5)
                       ),
-                  ),
-                ],
-              );
-            }
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            ReportChatroom.progressNames[progress-1],
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          SizedBox(
+                            width: 10,
+                          ),
+                          theicons[progress-1]
+                        ],
+                      ),
+                    ),
+                    Expanded(
+                      child: userData.isEmpty ?
+                      // ? widget.mednotes.isNotEmpty 
+                      //     ? Align(alignment: Alignment.centerRight,child: medNotesAppear()) :
+                          Align(alignment: Alignment.center, child: Text('mulai percakapan sekarang!')) 
+                        : ListView.builder(
+                          shrinkWrap: true,
+                          itemCount: userData.length,
+                          itemBuilder: (context, index) {
+                            final data = userData[index];
+                            final align = data['sender'] == 0 ? Alignment.centerRight : Alignment.centerLeft;
+                            return Align(
+                              alignment: align,
+                              child: MessageBubble(
+                                message: data['text_content'], 
+                                align: align, 
+                                timeString: data['created_at']
+                              ),
+                            );
+                          }
+                        ),
+                    ),
+                  ],
+                );
+              }
+            ),
           ),
-          Spacer(),
           TextMessage(service : widget.service, report :  widget.reportid),
           SizedBox(
             height: 15,

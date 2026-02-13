@@ -30,30 +30,27 @@ class _ChatRoomHistoryState extends State<ChatRoomHistory> {
       ),
       body: Column(
         children: [
-          Container(
-            width: double.infinity,
-            margin: EdgeInsets.all(5),
-            decoration: BoxDecoration(),
+          Expanded(
             child: FutureBuilder(
               future: getMessageHistory(widget.reportid), 
               builder: (context, snapshot) {
                 if(snapshot.connectionState == ConnectionState.waiting) {
                   return const Center(child: CircularProgressIndicator());
                 }
-
+            
                 if(snapshot.hasError) {
                   return Center(child: Text("Error : ${snapshot.error}"),);
                 }
-
+            
                 if(!snapshot.hasData || snapshot.data == null) {
                   return const Center(child: Text("Tidak ada data"));
                 }
-
+            
                 final userData = snapshot.data!;
-
+            
                 print('this is the message');
                 print(userData);
-
+            
                 return userData.isEmpty ?
                     Center(child: Text('Tidak ada riwayat pesan')) 
                   : ListView.builder(
@@ -73,16 +70,19 @@ class _ChatRoomHistoryState extends State<ChatRoomHistory> {
                     }
                   );
               }
-            )
+            ),
           ),
-          Spacer(),
-          Center(
+          Align(
+            alignment: Alignment.center,
             child: Text(
-              'Anda tidak bisa mengirim pesan dalam mode riwayat'
+              'Anda tidak bisa mengirim pesan dalam mode riwayat',
+              style: TextStyle(
+                fontSize: 10
+              ),
             ),
           ),
           SizedBox(
-            height: 40,
+            height: 60,
           )
         ],
       ),

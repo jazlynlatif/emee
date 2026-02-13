@@ -50,9 +50,9 @@ class _ReportPopUpState extends State<ReportPopUp> {
     selectedLatLng = LatLng(widget.position.latitude, widget.position.longitude);
     victimNum = widget.serviceid == 1 ? ReportPopUpData.medicIndicator2 : ReportPopUpData.fireIndicator2;
 
-    victimsWidget = widget.serviceid == 1 ? ReportPopUpData.medicIndicator1.map((value) => Container(padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),child: Text(value, style: TextStyle(fontWeight: FontWeight.bold),))).toList() : ReportPopUpData.fireIndicator1.map((value) => Container(padding: EdgeInsets.symmetric(vertical: 10, horizontal: 12),child: Text(value, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12),))).toList();
+    victimsWidget = widget.serviceid == 1 ? ReportPopUpData.medicIndicator1.map((value) => Container(padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),child: Text(value, style: TextStyle(fontWeight: FontWeight.bold),))).toList() : ReportPopUpData.fireIndicator1.map((value) => Container(padding: EdgeInsets.symmetric(vertical: 10, horizontal: 8),child: Text(value, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 10),))).toList();
     
-    victimsNumWidget = widget.serviceid == 1 ? ReportPopUpData.medicIndicator2.map((value) => Container(padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),child: Text(value, style: TextStyle(fontWeight: FontWeight.bold),))).toList() : ReportPopUpData.fireIndicator2.map((value) => Container(padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),child: Text(value, style: TextStyle(fontWeight: FontWeight.bold,),))).toList();
+    victimsNumWidget = widget.serviceid == 1 ? ReportPopUpData.medicIndicator2.map((value) => Container(padding: EdgeInsets.symmetric(vertical: 10, horizontal: 16),child: Text(value, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12),))).toList() : ReportPopUpData.fireIndicator2.map((value) => Container(padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),child: Text(value, style: TextStyle(fontWeight: FontWeight.bold,),))).toList();
 
     indicatorQuestion = ReportPopUpData.indicatorQuestion[widget.serviceid-1];
   }

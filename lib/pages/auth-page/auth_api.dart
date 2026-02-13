@@ -5,10 +5,12 @@ import 'package:http/http.dart' as http;
 
 final AuthService _authService = AuthService();
 
+const String baseUrl = "https://cuddly-athena-emeeapp-f2eaeb08.koyeb.app";
+
 Future registerAcc(email, password) async {
   try {
     final url = await http.post(
-      Uri.parse('http://10.0.2.2:5001/register'),
+      Uri.parse('$baseUrl/register'),
       headers: {"Content-type" : "application/json"},
       body: jsonEncode({
         "email" : email,
@@ -32,7 +34,7 @@ Future completeRegister(String firstname, String lastname, String gender, String
     token = await _authService.getAccessToken();
 
     final url = await http.post(
-      Uri.parse('http://10.0.2.2:5001/register/complete'),
+      Uri.parse('$baseUrl/register/complete'),
       headers : {
         "Content-type" : "application/json",
         "Authorization" : "Bearer $token"
@@ -56,7 +58,7 @@ Future completeRegister(String firstname, String lastname, String gender, String
 Future loginAcc(email, password) async {
   try {
     final url = await http.post(
-      Uri.parse('http://10.0.2.2:5001/login'),
+      Uri.parse('$baseUrl/login'),
       headers: {"Content-type" : "application/json"},
       body : jsonEncode({
         "email" : email,
@@ -77,7 +79,7 @@ Future logout() async {
   try {
     if (token != null) {
       final url = await http.post(
-        Uri.parse('http://10.0.2.2:5001/logout'),
+        Uri.parse('$baseUrl/logout'),
         headers: {
           'Authorization': 'Bearer $token',
         },

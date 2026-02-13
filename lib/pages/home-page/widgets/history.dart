@@ -129,7 +129,7 @@ class _HistoryState extends State<History> {
                                   timestamp,
                                   style: TextStyle(
                                     fontWeight: FontWeight.bold,
-                                    fontSize: 12,
+                                    fontSize: 10,
                                     color: Colors.grey[600]
                                   ),
                                 ),

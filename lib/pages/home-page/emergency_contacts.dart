@@ -98,7 +98,9 @@ class _EmergencyContactsState extends State<EmergencyContacts> {
                     }
                   },
                 ),
-                Spacer(),
+                SizedBox(
+                  height: 20,
+                ),
                 Align(
                   alignment: Alignment.center,
                   child: ElevatedButton(
@@ -147,40 +149,40 @@ class _EmergencyContactsState extends State<EmergencyContacts> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return FutureBuilder(
-      future: fetchData('emergencycontacts'),
-      builder: (context, snapshot) {
-        if(snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(child: CircularProgressIndicator());
-        }
+    return Scaffold(
+      resizeToAvoidBottomInset: true,
+      backgroundColor: Colors.white,
+      appBar: AppBar(
+        title: Text('Kontak Darurat'),
+      ),
+      body: FutureBuilder(
+        future: fetchData('emergencycontacts'),
+        builder: (context, snapshot) {
+          if(snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
 
-        if(snapshot.hasError) {
-          return Center(child: Text("Error : ${snapshot.error}"),);
-        }
+          if(snapshot.hasError) {
+            return Center(child: Text("Error : ${snapshot.error}"),);
+          }
 
-        if(!snapshot.hasData || snapshot.data == null) {
-          print('null i guess');
-          return const Center(child: Text("No data"));
-        }
+          if(!snapshot.hasData || snapshot.data == null) {
+            print('null i guess');
+            return const Center(child: Text("No data"));
+          }
 
-        // if (snapshot.hasData) {
-        //   final data = snapshot.data;
+          // if (snapshot.hasData) {
+          //   final data = snapshot.data;
 
-        //   print(snapshot.data);
+          //   print(snapshot.data);
 
-        //   if (data is Map && data.containsKey("error")) {
-        //     return Center(child: Text("Unauthorized. Please log in again."));
-        //   }
-        // }
+          //   if (data is Map && data.containsKey("error")) {
+          //     return Center(child: Text("Unauthorized. Please log in again."));
+          //   }
+          // }
 
-        final userData = snapshot.data!;
-
-        return Scaffold(
-          backgroundColor: Colors.white,
-          appBar: AppBar(
-            title: Text('Kontak Darurat'),
-          ),
-          body: Column(
+          final userData = snapshot.data!;
+          return Column(
             children: [
               userData.isEmpty 
               ? Column(
@@ -275,23 +277,23 @@ class _EmergencyContactsState extends State<EmergencyContacts> {
                   }
                 )
               ),
-              Spacer(),
+              Spacer()
               
             ],
-          ),
-          floatingActionButton: FloatingActionButton(
-            onPressed: () {
-              _contactController.clear();
-              _phonenumberController.clear();
-              doNum('add');
-            }, 
-            tooltip: 'Add a note',
-            backgroundColor: theme.colorScheme.primary,
-            child: Icon(Icons.add),
-          ),
-          floatingActionButtonLocation: FloatingActionButtonLocation.miniEndFloat,
-        );
-      },
+          );
+        }
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          _contactController.clear();
+          _phonenumberController.clear();
+          doNum('add');
+        }, 
+        tooltip: 'Add a note',
+        backgroundColor: theme.colorScheme.primary,
+        child: Icon(Icons.add),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.miniEndFloat,
     );
   }
 }

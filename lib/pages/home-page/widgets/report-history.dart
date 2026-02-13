@@ -114,9 +114,6 @@ class _ReportHistoryState extends State<ReportHistory> {
                         ]
                       ),
                     ),
-                    SizedBox(
-                      height: 10,
-                    ),
                     Container(
                       width: double.infinity,
                       padding: EdgeInsets.symmetric(vertical: 15, horizontal: 20),
@@ -362,6 +359,9 @@ class _ReportHistoryState extends State<ReportHistory> {
                                               ? Text('Tidak dijawab')
                                               : Text(
                                                 data['answer'],
+                                                style: TextStyle(
+                                                  fontSize: 12
+                                                ),
                                                 maxLines: 2,
                                                 overflow: TextOverflow.ellipsis,
                                               ),

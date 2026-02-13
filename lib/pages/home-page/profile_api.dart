@@ -6,6 +6,7 @@ import 'package:http/http.dart' as http;
 
 final AuthService _authService = AuthService();
 
+const String baseUrl = "https://cuddly-athena-emeeapp-f2eaeb08.koyeb.app";
 
 // Future fetchServices() async {
 //   try {
@@ -38,22 +39,24 @@ Future fetchData(String info) async {
     token = await _authService.getAccessToken();
 
     var url = await http.get(
-      Uri.parse('http://10.0.2.2:5001/retrievedata/$info'),
+      Uri.parse('$baseUrl/retrievedata/$info'),
       headers: {
         "Content-type"  : "application/json",
         "Authorization" : "Bearer $token",
       },
     );
 
-    if (url.statusCode != 200 || url.statusCode != 203) {
+    if (url.statusCode == 401 || url.statusCode == 403) {
       // 🔁 TRY REFRESH
       final newToken = await refreshAccessToken();
       if (newToken == null) {
         throw Exception('Session expired');
       }
 
+      token = newToken;
+
       url = await http.get(
-        Uri.parse('http://10.0.2.2:5001/retrievedata/$info'),
+        Uri.parse('$baseUrl/retrievedata/$info'),
         headers: {
           "Content-type"  : "application/json",
           "Authorization" : "Bearer $token",
@@ -77,7 +80,7 @@ Future fetchReportHistory() async {
     token = await _authService.getAccessToken();
 
     var url = await http.get(
-      Uri.parse('http://10.0.2.2:5001/user/report/history/get/all'),
+      Uri.parse('$baseUrl/user/report/history/get/all'),
       headers: {
         "Content-type"  : "application/json",
         "Authorization" : "Bearer $token",
@@ -85,15 +88,17 @@ Future fetchReportHistory() async {
 
     );
 
-    if (url.statusCode != 200 || url.statusCode == 203) {
+    if (url.statusCode == 401 || url.statusCode == 403) {
       // 🔁 TRY REFRESH
       final newToken = await refreshAccessToken();
       if (newToken == null) {
         throw Exception('Session expired');
       }
 
+      token = newToken;
+
       url = await http.get(
-        Uri.parse('http://10.0.2.2:5001/user/report/history/get/all'),
+        Uri.parse('$baseUrl/user/report/history/get/all'),
         headers: {
           "Content-type"  : "application/json",
           "Authorization" : "Bearer $token",
@@ -117,7 +122,7 @@ Future postMedNotesData(String title, String note) async {
     token = await _authService.getAccessToken();
 
     var url = await http.post(
-      Uri.parse('http://10.0.2.2:5001/adddata/mednotes'),
+      Uri.parse('$baseUrl/adddata/mednotes'),
       headers : {
         "Content-type" : "application/json",
         "Authorization" : "Bearer $token"
@@ -128,15 +133,17 @@ Future postMedNotesData(String title, String note) async {
       })
     );
 
-    if (url.statusCode != 200 || url.statusCode != 203) {
+    if (url.statusCode == 401 || url.statusCode == 403) {
       // 🔁 TRY REFRESH
       final newToken = await refreshAccessToken();
       if (newToken == null) {
         throw Exception('Session expired');
       }
 
+      token = newToken;
+
       url = await http.post(
-        Uri.parse('http://10.0.2.2:5001/adddata/mednotes'),
+        Uri.parse('$baseUrl/adddata/mednotes'),
         headers : {
           "Content-type" : "application/json",
           "Authorization" : "Bearer $token"
@@ -162,7 +169,7 @@ Future postEmerContactsData(String contact, String phonenumber) async {
     token = await _authService.getAccessToken();
 
     var url = await http.post(
-      Uri.parse('http://10.0.2.2:5001/adddata/emercontacts'),
+      Uri.parse('$baseUrl/adddata/emercontacts'),
       headers : {
         "Content-type" : "application/json",
         "Authorization" : "Bearer $token"
@@ -173,15 +180,17 @@ Future postEmerContactsData(String contact, String phonenumber) async {
       })
     );
 
-    if (url.statusCode != 200 || url.statusCode != 203) {
+    if (url.statusCode == 401 || url.statusCode == 403) {
       // 🔁 TRY REFRESH
       final newToken = await refreshAccessToken();
       if (newToken == null) {
         throw Exception('Session expired');
       }
 
+      token = newToken;
+
       url = await http.post(
-        Uri.parse('http://10.0.2.2:5001/adddata/emercontacts'),
+        Uri.parse('$baseUrl/adddata/emercontacts'),
         headers : {
           "Content-type" : "application/json",
           "Authorization" : "Bearer $token"
@@ -210,7 +219,7 @@ Future editMedNotesData(String title, String note, int noteId) async {
     print(noteId);
 
     var url = await http.put(
-      Uri.parse('http://10.0.2.2:5001/editdata/mednotes'),
+      Uri.parse('$baseUrl/editdata/mednotes'),
       headers : {
         "Content-type" : "application/json",
         "Authorization" : "Bearer $token"
@@ -222,15 +231,17 @@ Future editMedNotesData(String title, String note, int noteId) async {
       })
     );
 
-    if (url.statusCode != 200 || url.statusCode != 203) {
+    if (url.statusCode == 401 || url.statusCode == 403) {
       // 🔁 TRY REFRESH
       final newToken = await refreshAccessToken();
       if (newToken == null) {
         throw Exception('Session expired');
       }
 
+      token = newToken;
+
       url = await http.put(
-        Uri.parse('http://10.0.2.2:5001/editdata/mednotes'),
+        Uri.parse('$baseUrl/editdata/mednotes'),
         headers : {
           "Content-type" : "application/json",
           "Authorization" : "Bearer $token"
@@ -257,7 +268,7 @@ Future editEmerContactsData(String contact, String phonenumber, int contactId) a
     token = await _authService.getAccessToken();
 
     var url = await http.put(
-      Uri.parse('http://10.0.2.2:5001/editdata/emercontacts'),
+      Uri.parse('$baseUrl/editdata/emercontacts'),
       headers : {
         "Content-type" : "application/json",
         "Authorization" : "Bearer $token"
@@ -269,15 +280,17 @@ Future editEmerContactsData(String contact, String phonenumber, int contactId) a
       })
     );
 
-    if (url.statusCode != 200 || url.statusCode != 203) {
+    if (url.statusCode == 401 || url.statusCode == 403) {
       // 🔁 TRY REFRESH
       final newToken = await refreshAccessToken();
       if (newToken == null) {
         throw Exception('Session expired');
       }
 
+      token = newToken;
+
       url = await http.put(
-        Uri.parse('http://10.0.2.2:5001/editdata/emercontacts'),
+        Uri.parse('$baseUrl/editdata/emercontacts'),
         headers : {
           "Content-type" : "application/json",
           "Authorization" : "Bearer $token"
@@ -305,7 +318,7 @@ Future deleteData(int noteId, int type) async {
     token = await _authService.getAccessToken();
 
     var url = await http.delete(
-      Uri.parse('http://10.0.2.2:5001/deletedata/$noteId/$type'),
+      Uri.parse('$baseUrl/deletedata/$noteId/$type'),
       headers: {
         "Content-type" : "application/json",
         "Authorization" : "Bearer $token"
@@ -313,15 +326,17 @@ Future deleteData(int noteId, int type) async {
 
     );
 
-    if (url.statusCode != 200 || url.statusCode != 203) {
+    if (url.statusCode == 401 || url.statusCode == 403) {
       // 🔁 TRY REFRESH
       final newToken = await refreshAccessToken();
       if (newToken == null) {
         throw Exception('Session expired');
       }
 
+      token = newToken;
+
       url = await http.delete(
-        Uri.parse('http://10.0.2.2:5001/deletedata/$noteId/$type'),
+        Uri.parse('$baseUrl/deletedata/$noteId/$type'),
         headers: {
           "Content-type" : "application/json",
           "Authorization" : "Bearer $token"

@@ -33,139 +33,148 @@ class _SignUpState extends State<SignUp> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Scaffold(
+      resizeToAvoidBottomInset: true,
       backgroundColor: Colors.white,
       appBar: AppBar(
         title: Text(
           'register'
         ),
       ),
-      body: Form(
-        key : _formKey,
-        child: Column(
-          children: [
-            SizedBox(
-                height: 15,
-            ),
-            // Text(
-            //   '[logo]',
-            //   style: theme.textTheme.titleLarge,
-            // ),
-            SizedBox(
-              height: 30,
-            ),
-            Container(
-              padding: EdgeInsets.symmetric(horizontal: 30),
-              child: TextFormField(
-                decoration: InputDecoration(
-                  label: const Text(
-                    'Email'
-                  ),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(20)
-                  )
-                ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Enter your email';
-                  }
-                },
-                controller: _emailController,
+      body: SingleChildScrollView(
+        child: Form(
+          key : _formKey,
+          child: Column(
+            children: [
+              SizedBox(
+                  height: 15,
               ),
-            ),
-            SizedBox(
-              height: 20,
-            ),
-            Container(
-              padding: EdgeInsets.symmetric(horizontal: 30),
-              child: TextFormField(
-                decoration: InputDecoration(
-                  label: const Text(
-                    'Password'
-                  ),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(20)
-                  ),
-                ),
-                obscureText: true,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Enter your password';
-                  }
-                },
-                controller: _passwordController,
+              // Text(
+              //   '[logo]',
+              //   style: theme.textTheme.titleLarge,
+              // ),
+              SizedBox(
+                height: 30,
               ),
-            ),
-            SizedBox(
-              height: 20,
-            ),
-            ElevatedButton(
-              onPressed: () async{
-                if (_formKey.currentState!.validate()) {
-                  // for a success
-                  
-                  final registerRes = await registerAcc(_emailController.text, _passwordController.text);
-
-                  if (registerRes.statusCode == 201) {
-                    final data = jsonDecode(registerRes.body);
-
-                    await _authService.saveTokens(data['accessToken'], data['refreshToken']);
-
-                    Navigator.pushReplacement(
-                      context, 
-                      MaterialPageRoute(builder: (context) => const SignUpDetails())
-                    );
-                  }
-                  else {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text(registerRes.body))
-                    );
-                  }
-                }
-              }, 
-              style: ElevatedButton.styleFrom(
-                backgroundColor: theme.colorScheme.primary,
-                padding: EdgeInsets.symmetric(horizontal: 50, vertical: 10),
-              ),
-              child: Text(
-                'register',
-                style: TextStyle(
-                  color: Colors.black,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 20
-                ),
-             ),
-            ),
-            SizedBox(
-              height: 10,
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  "Sudah punya akun?"
-                ),
-                SizedBox(
-                  width: 5
-                ),
-                GestureDetector(
-                  onTap: () {
-                    Navigator.pushReplacement(
-                      context, 
-                      MaterialPageRoute(
-                        builder: (context) => const LoginPage()
-                      )
-                    );
+              Container(
+                padding: EdgeInsets.symmetric(horizontal: 30),
+                child: TextFormField(
+                  decoration: InputDecoration(
+                    label: const Text(
+                      'Email'
+                    ),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(20)
+                    )
+                  ),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Enter your email';
+                    }
                   },
-                  child: Text(
-                    'Log In',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold
+                  controller: _emailController,
+                ),
+              ),
+              SizedBox(
+                height: 20,
+              ),
+              Container(
+                padding: EdgeInsets.symmetric(horizontal: 30),
+                child: TextFormField(
+                  decoration: InputDecoration(
+                    label: const Text(
+                      'Password'
+                    ),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(20)
                     ),
                   ),
-                )
-              ],
-            )
-          ],
+                  obscureText: true,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Enter your password';
+                    }
+                  },
+                  controller: _passwordController,
+                ),
+              ),
+              SizedBox(
+                height: 20,
+              ),
+              ElevatedButton(
+                onPressed: () async{
+                  if (_formKey.currentState!.validate()) {
+                    // for a success
+                    
+                    final registerRes = await registerAcc(_emailController.text, _passwordController.text);
+        
+                    if (registerRes.statusCode == 201) {
+                      final data = jsonDecode(registerRes.body);
+        
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('Account registered'))
+                      );
+        
+                      await _authService.saveTokens(data['accessToken'], data['refreshToken']);
+        
+                      Navigator.pushReplacement(
+                        context, 
+                        MaterialPageRoute(
+                          builder: (context) => const SignUpDetails()
+                        )
+                      );
+                    }
+                    else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text(registerRes.body))
+                      );
+                    }
+                  }
+                }, 
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: theme.colorScheme.primary,
+                  padding: EdgeInsets.symmetric(horizontal: 50, vertical: 10),
+                ),
+                child: Text(
+                  'register',
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 20
+                  ),
+               ),
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    "Sudah punya akun?"
+                  ),
+                  SizedBox(
+                    width: 5
+                  ),
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.pushReplacement(
+                        context, 
+                        MaterialPageRoute(
+                          builder: (context) => const LoginPage()
+                        )
+                      );
+                    },
+                    child: Text(
+                      'Log In',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold
+                      ),
+                    ),
+                  )
+                ],
+              )
+            ],
+          ),
         ),
       )
     );
